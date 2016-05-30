@@ -15,7 +15,6 @@ public class FilmeNegocio {
 
     public void salvar(Filme f) throws NegocioException {
         this.validarCamposObrigatorios(f);
-        this.validarCodExistente(f);
         filmeDao.salvar(f);
     }
 
@@ -60,9 +59,6 @@ public class FilmeNegocio {
     }
 
     private void validarCamposObrigatorios(Filme f) throws NegocioException {
-        if (f.getCodigo()<0) {
-            throw new NegocioException("Codigo Invalido");
-        }
          if (f.getNome() == null || f.getNome().isEmpty()) {
             throw new NegocioException("Campo nome nao informado");
         }

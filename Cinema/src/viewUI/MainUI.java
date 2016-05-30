@@ -33,7 +33,7 @@ public class MainUI {
             opcao = Console.scanInt("Digite sua opção:");
             switch (opcao) {
                 case MainMenu.OP_FILMES:
-                   new FilmeUI(listaFilmes).executar();
+                   new FilmeUI().executar();
                     break;
                 case MainMenu.OP_SALAS:
                    new SalaUI(listaSalas).executar();

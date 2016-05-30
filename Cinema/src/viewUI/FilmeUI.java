@@ -52,15 +52,14 @@ class FilmeUI {
 
     private void cadastrarFilmes() {
         System.out.println("========= Cadastro de Filmes ============");
-        int cod = Console.scanInt("Informe o codigo do Filme:");
+        String nome = Console.scanString("Digite o nome do Filme:");
         try {
-            if (filmeNegocio.procurarFilmePorCod(cod)!=null) {
-                System.err.println("Filme com esse codigo já existe, já cadastrado!!!");
+            if (validaNome(nome)) {
+                System.err.println("Filme com esse nome já existe, já cadastrado!!!");
             } else {
-                String nome = Console.scanString("Digite o nome do Filme:");
                 String genero = Console.scanString("Informe o genero do Filme:");
                 String sinopse = Console.scanString("Digite uma sinopse para este Filme:");
-                filmeNegocio.salvar(new Filme(cod,nome,genero,sinopse));
+                filmeNegocio.salvar(new Filme(nome,genero,sinopse));
                 System.out.println("Filme "+nome+" cadastrado com sucesso!!!"); 
             }
         } catch (NegocioException ex) {
@@ -97,7 +96,7 @@ class FilmeUI {
         String nome = Console.scanString("Informe o nome do filme para a busca:");
         try {
             List<Filme> FilmeEncontrado = filmeNegocio.procurarPorNomeFilme(nome);
-                    if(FilmeEncontrado!=null){
+                    if(!FilmeEncontrado.isEmpty()){
             System.out.println(String.format("%-10s", "CÓDIGO") + "\t"
                 + String.format("%-20s", "|NOME") + "\t"
                 + String.format("%-20s", "|GENERO") + "\t"
@@ -147,15 +146,71 @@ class FilmeUI {
             }else{
                int cod = Console.scanInt("Digite o codigo do filme no qual deseja excluir:");
                Filme f = filmeNegocio.procurarFilmePorCod(cod);
-            if (UIUtil.getConfirmacao("Realmente deseja excluir esse paciente?")) {
-                filmeNegocio.deletar(f);
-                System.out.println("Filme deletado com sucesso!");
-            } else {
+               if (f!=null && UIUtil.getConfirmacao("Realmente deseja excluir esse paciente?")) {
+                     filmeNegocio.deletar(f);
+                 System.out.println("Filme deletado com sucesso!");
+                } else {
+                   if(f==null){
+                       System.out.println("Codigo incorreto nenhum filme encontrado!!!");
+                       return;
+                   }
                 System.out.println("Operacao cancelada!");
-            }
+                }
            }
         } catch (NegocioException ex) {
             UIUtil.mostrarErro(ex.getMessage());
         } 
+    }
+        private void atualizarFilme() {
+        try {
+            if(this.mostrarFilmes()){
+                System.out.println("Nao ha Filmes cadastrados!!!");
+                return;
+            }else{
+               int cod = Console.scanInt("Digite o codigo do filme no qual deseja alterar os dados:");
+               Filme f = filmeNegocio.procurarFilmePorCod(cod);
+                if(f!=null){
+                    System.out.println("-----------------------------");
+                    System.out.println("Filme");
+                    System.out.println("Codigo: " + f.getCodigo());
+                    System.out.println("Nome: " + f.getNome());
+                    System.out.println("Genero: " + f.getGenero());
+                    System.out.println("Sinopse: " + f.getSinopse());
+                    System.out.println("-----------------------------");
+                    System.out.println("Digite os dados que deseja alterar no filme [Vazio caso nao queira]");
+            String nome = Console.scanString("Nome: ");
+            String genero = Console.scanString("Genero: ");
+            String sinopse = Console.scanString("Sinopse: ");
+            if (!nome.isEmpty()) {
+                f.setNome(nome);
+            }
+            if (!genero.isEmpty()) {
+                f.setGenero(genero);
+            }
+            if(!sinopse.isEmpty()){
+                f.setSinopse(sinopse);
+            }
+            filmeNegocio.atualizar(f);
+            System.out.println("Paciente " + nome + " atualizado com sucesso!");
+                }else{
+                    System.out.println("Codigo do filme invalido!!!");
+                    return;
+                }
+            }
+        } catch (NegocioException ex) {
+            UIUtil.mostrarErro(ex.getMessage());
+        }
+    }
+
+    private boolean validaNome(String nome) throws NegocioException {
+        List<Filme> listaFilmesNome = filmeNegocio.procurarPorNomeFilme(nome);
+        if(!listaFilmesNome.isEmpty()){
+            for(Filme f : listaFilmesNome){
+              if(f.getNome().equals(nome)){
+                  return true;
+              }  
+            }
+        }
+        return false;
     }
 }

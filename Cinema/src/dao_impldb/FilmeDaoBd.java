@@ -12,7 +12,7 @@ public class FilmeDaoBd extends DaoBd<Filme> implements FilmeDao {
 
     @Override
     public void salvar(Filme filme) {
-        int cod = 0;
+     
         try {
             String sql = "INSERT INTO filme VALUES (?,?,?)";
 
@@ -22,17 +22,6 @@ public class FilmeDaoBd extends DaoBd<Filme> implements FilmeDao {
             comando.setString(2, filme.getGenero());
             comando.setString(3, filme.getSinopse());
             comando.executeUpdate();
-            //Obtém o resultSet para pegar o id
-            ResultSet resultado = comando.getGeneratedKeys();
-            if (resultado.next()) {
-                //seta o id para o objeto
-                cod = resultado.getInt(1);
-                filme.setCodigo(cod);
-            }
-            else{
-                System.err.println("Erro de Sistema - Nao gerou o codigo conforme esperado!");
-                throw new BDException("Nao gerou o codigo conforme esperado!");
-            }
 
         } catch (SQLException ex) {
             System.err.println("Erro de Sistema - Problema ao salvar Filme no Banco de Dados!");
@@ -124,12 +113,13 @@ public class FilmeDaoBd extends DaoBd<Filme> implements FilmeDao {
             ResultSet resultado = comando.executeQuery();
             
            while (resultado.next()) {
-            
+                String nome = resultado.getString("nome");
                 String genero = resultado.getString("genero");
                 String sinopse = resultado.getString("sinopse");
                 int cod = resultado.getInt("cod");
+                
            
-                Filme f = new Filme(cod, Nome, genero, sinopse);
+                Filme f = new Filme(cod, nome, genero, sinopse);
 
                 listaFilmes.add(f);
             

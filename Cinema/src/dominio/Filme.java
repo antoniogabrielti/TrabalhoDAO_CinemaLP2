@@ -7,11 +7,17 @@ public class Filme implements Comparable<Filme> {
     private String genero;
     private String sinopse;
 
-    public Filme(int codigo, String nome, String genero, String sinopse) {
-        this.codigo = codigo;
+    public Filme(String nome, String genero, String sinopse) {
         this.nome = nome;
         this.genero = genero;
         this.sinopse = sinopse;
+    }
+
+    public Filme(int codigo, String nome, String genero, String sinopse) {
+        this.codigo=codigo;
+        this.nome = nome;
+        this.genero = genero;
+        this.sinopse = sinopse; 
     }
 
     public int getCodigo() {
@@ -33,6 +39,18 @@ public class Filme implements Comparable<Filme> {
 
     public String getSinopse() {
         return sinopse;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void setGenero(String genero) {
+        this.genero = genero;
+    }
+
+    public void setSinopse(String sinopse) {
+        this.sinopse = sinopse;
     }
 
     @Override
