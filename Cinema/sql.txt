@@ -1,0 +1,5 @@
+create table filme(
+nome varchar(40) not null,
+genero varchar(15) not null,
+sinopse varchar(40) not null,
+cod serial primary key);

@@ -1,0 +1,11 @@
+create table paciente (
+id serial primary key,
+rg varchar(15),
+nome varchar(30),
+dataNascimento date
+);
+
+DELETE FROM paciente;
+ALTER SEQUENCE paciente_id_seq RESTART WITH 1;
+
+SELECT * FROM paciente;
