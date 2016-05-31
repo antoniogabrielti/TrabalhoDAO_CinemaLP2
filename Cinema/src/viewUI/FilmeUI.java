@@ -86,7 +86,7 @@ class FilmeUI {
                     + String.format("%-20s", "|" + filme.getNome()) + "\t"
                     + String.format("%-20s", "|" + filme.getGenero()) + "\t"
                     + String.format("%-20s", "|" + filme.getSinopse()));
-            }
+              }
             return false;
         }
     }

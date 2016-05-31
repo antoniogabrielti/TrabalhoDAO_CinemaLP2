@@ -3,3 +3,8 @@ nome varchar(40) not null,
 genero varchar(15) not null,
 sinopse varchar(40) not null,
 cod serial primary key);
+
+create table sala(
+numero smallint not null,
+capacidade smallint not null,
+idsala serial primary key);
