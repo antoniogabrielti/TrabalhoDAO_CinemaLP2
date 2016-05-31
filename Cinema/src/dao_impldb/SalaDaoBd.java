@@ -82,8 +82,9 @@ public class SalaDaoBd extends DaoBd<Sala> implements SalaDao {
             if (resultado.next()) {
                 int numeroSala = resultado.getInt("numero");
                 int capacidade = resultado.getInt("capacidade");
+                int id = resultado.getInt("idsala");
                               
-                Sala s = new Sala(numeroSala, capacidade);
+                Sala s = new Sala(numeroSala, capacidade,id);
 
                 return s;
 
@@ -113,8 +114,9 @@ public class SalaDaoBd extends DaoBd<Sala> implements SalaDao {
            while (resultado.next()) {
                 int numero = resultado.getInt("numero");
                 int capacidadeSala = resultado.getInt("capacidade");
+                int id = resultado.getInt("idsala");
                               
-                Sala s = new Sala(numero, capacidadeSala);
+                Sala s = new Sala(numero, capacidadeSala,id);
 
                 listaSalas.add(s);
             
@@ -142,8 +144,9 @@ public class SalaDaoBd extends DaoBd<Sala> implements SalaDao {
             while (resultado.next()) {
                 int numero = resultado.getInt("numero");
                 int capacidade = resultado.getInt("capacidade");
+                int id = resultado.getInt("idsala");
                               
-                Sala s = new Sala(numero, capacidade);
+                Sala s = new Sala(numero, capacidade,id);
 
                 listaSala.add(s);
             

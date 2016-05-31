@@ -10,6 +10,12 @@ public class Sala {
         this.capacidade = capacidade;
     }
 
+    public Sala(int numero, int capacidade, int id) {
+        this.numero=numero;
+        this.capacidade=capacidade;
+        this.id=id;
+    }
+
     public int getId() {
         return id;
     }
