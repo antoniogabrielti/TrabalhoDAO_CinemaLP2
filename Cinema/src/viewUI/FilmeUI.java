@@ -146,7 +146,7 @@ class FilmeUI {
             }else{
                int cod = Console.scanInt("Digite o codigo do filme no qual deseja excluir:");
                Filme f = filmeNegocio.procurarFilmePorCod(cod);
-               if (f!=null && UIUtil.getConfirmacao("Realmente deseja excluir esse paciente?")) {
+               if (f!=null && UIUtil.getConfirmacao("Realmente deseja excluir esse filme?")) {
                      filmeNegocio.deletar(f);
                  System.out.println("Filme deletado com sucesso!");
                 } else {

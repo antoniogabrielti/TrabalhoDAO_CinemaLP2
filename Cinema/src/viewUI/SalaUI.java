@@ -2,16 +2,19 @@ package viewUI;
 
 import dominio.Sala;
 import java.util.List;
-import repositorio.RepositorioSala;
+import negocio.NegocioException;
+import negocio.SalaNegocio;
 import util.Console;
 import view.menu.SalaMenu;
 
 
 class SalaUI {
-private RepositorioSala listaSalas;
-    public SalaUI(RepositorioSala listaSalas) {
-        this.listaSalas=listaSalas;
+    private SalaNegocio salaNegocio;
+
+    public SalaUI() {
+        salaNegocio = new SalaNegocio();
     }
+    
         public void executar() {
         int opcao = 0;
         do {
@@ -30,6 +33,12 @@ private RepositorioSala listaSalas;
                 case SalaMenu.OP_BUSCACAPACIDADE:
                     buscaSalaPorCapacidade();
                     break;
+                case SalaMenu.OP_ATUALIZASALA:
+                    atualizarSala();
+                    break;
+                case SalaMenu.OP_DELETASALA:
+                    deletaSala();
+                    break;
                 case SalaMenu.OP_VOLTAR:
                     System.out.println("Retornando ao menu principal..");
                     break;
@@ -42,54 +51,100 @@ private RepositorioSala listaSalas;
 
     private void cadastrarSala() {
         System.out.println("===== Cadastro de Salas ======");
-        int numero = Console.scanInt("Digite o numero da Sala:");
-        if (listaSalas.buscarSalasPorNumero(numero)!=null) {
-            System.out.println("Sala com esse numero já existe, já cadastrada!!!");
-        } else {
-            int capacidade = Console.scanInt("Informe a capacidade desta Sala:");
-            listaSalas.addSala(new Sala(numero,capacidade));
-            System.out.println("Sala "+numero+" cadastrada com sucesso!!!");
+        int num = Console.scanInt("Digite o numero da Sala:");
+        try {
+            if (salaNegocio.SalaExiste(num)) {
+                System.err.println("Sala com esse numero já existe, já cadastrada!!!");
+            } else {
+                int capacidade = Console.scanInt("Informe a capacidade dessa sala [sendo a capacidade minima 20]:");
+                salaNegocio.salvar(new Sala(num,capacidade));
+                System.out.println("Sala "+num+" cadastrada com sucesso!!!"); 
+            }
+        } catch (NegocioException ex) {
+            UIUtil.mostrarErro(ex.getMessage());
         }
     }
 
-    public void mostrarSalas() {
-                System.out.println("----------------- Relatorio das Salas --------------\n");
-        System.out.println(String.format("%-10s", "NUMERO") + "\t"
+        public boolean mostrarSalas() {
+        List<Sala> listaSala = salaNegocio.listar();
+        return(this.verSalas(listaSala));    
+        }
+        public boolean verSalas(List<Sala> listaSala){
+        System.out.println("------------ Relatorio de Salas -----------------\n");
+        if (listaSala.isEmpty()) {
+            System.out.println("Salas nao encontradas!");
+            return true;
+        }else{
+            System.out.println(String.format("%-10s", "NUMERO") + "\t"
                 + String.format("%-20s", "|CAPACIDADE"));
-        for (Sala S : listaSalas.getListaSalas()) {
-            System.out.println(String.format("%-10s", S.getNumero()) + "\t"
-                    + String.format("%-20s", "|" + S.getCapacidade()));
+            for (Sala s : listaSala) {
+                System.out.println(String.format("%-10s", s.getNumero()) + "\t"
+                  + String.format("%-20s", "|" + s.getCapacidade()));
+              }
+            return false;
         }
     }
 
     private void buscaSalaPorNumero() {
-                System.out.println("######## Busca de Sala pelo Numero ############");
-        int numero = Console.scanInt("Informe o numero da sala a qual deseja buscar:");
-        Sala SalaEncontrada=listaSalas.buscarSalasPorNumero(numero);
-        if(SalaEncontrada!=null){
+        System.out.println("######## Busca de Sala pelo Numero ############");
+        int numero = Console.scanInt("Informe o numero da sala para a busca:");
+        try {
+            Sala salaEncontrada = salaNegocio.procurarSalaPorNumero(numero);
+             if(salaEncontrada!=null){
             System.out.println(String.format("%-10s", "NUMERO") + "\t"
                 + String.format("%-20s", "|CAPACIDADE"));
-            System.out.println(String.format("%-10s", SalaEncontrada.getNumero()) + "\t"
-                    + String.format("%-20s", "|" + SalaEncontrada.getCapacidade()));
+            System.out.println(String.format("%-10s", salaEncontrada.getNumero()) + "\t"
+                    + String.format("%-20s", "|" + salaEncontrada.getCapacidade()));
+            
         }else{
-            System.out.println("Nenhuma Sala foi encontrada com este numero!!!");
+            System.err.println("Nenhuma Sala foi encontrada com este numero!!!");
+        }
+        } catch (NegocioException ex) {
+            UIUtil.mostrarErro(ex.getMessage());
         }
     }
 
     private void buscaSalaPorCapacidade() {
-                System.out.println("######## Busca de Salas por Capacidade ############");
-        int capacidade = Console.scanInt("Informe a capacidade a qual necessita que a sala tenha:");
-        List<Sala> SalasEncontrada=listaSalas.buscarSalasPorCapacidade(capacidade);
-        if(!SalasEncontrada.isEmpty()){
-            System.out.println("<< Salas com capacidade igual ou superior a necessaria >>");
-            for(Sala S : SalasEncontrada){
-                System.out.println(String.format("%-10s", "NUMERO") + "\t"
+        System.out.println("######## Busca de Salas por Capacidade ############");
+        int capacidade = Console.scanInt("Informe a capacidade da qual necessita que a sala tenha:");
+        try {
+            List<Sala> SalasEncontradas = salaNegocio.procurarPorCapacidade(capacidade);
+            if(!SalasEncontradas.isEmpty()){
+            System.out.println(String.format("%-10s", "NUMERO") + "\t"
                 + String.format("%-20s", "|CAPACIDADE"));
-            System.out.println(String.format("%-10s", S.getNumero()) + "\t"
-                    + String.format("%-20s", "|" + S.getCapacidade()));             
+            for (Sala s : SalasEncontradas) {
+                System.out.println(String.format("%-10s", s.getNumero()) + "\t"
+                     + String.format("%-20s", "|" + s.getCapacidade()));
             }
         }else{
-            System.out.println("Nenhuma Sala atende a capacidade solicitada!!!");
+            System.err.println("Nenhuma sala comporta esta capacidade informada!!!");
+        }
+        } catch (NegocioException ex) {
+            UIUtil.mostrarErro(ex.getMessage());
+        }
+    }
+
+    private void deletaSala() {
+               try {
+            if(this.mostrarSalas()){
+                System.out.println("Nao ha Salas cadastradas!!!");
+                return;
+            }else{
+               int num = Console.scanInt("Digite o numero da sala no qual deseja excluir:");
+               Sala s = salaNegocio.procurarSalaPorNumero(num);
+               if (s!=null && UIUtil.getConfirmacao("Realmente deseja excluir essa sala?")) {
+                     salaNegocio.deletar(s);
+                 System.out.println("Sala deletada com sucesso!");
+                } else {
+                   if(s==null){
+                       System.out.println("Numero incorreto nenhuma sala encontrada!!!");
+                       return;
+                   }
+                System.out.println("Operacao cancelada!");
+                }
+           }
+        } catch (NegocioException ex) {
+            UIUtil.mostrarErro(ex.getMessage());
         }
     }
     

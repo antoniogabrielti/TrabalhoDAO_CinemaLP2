@@ -35,10 +35,10 @@ public class SalaDaoBd extends DaoBd<Sala> implements SalaDao {
     @Override
     public void deletar(Sala sala) {
                 try {
-            String sql = "DELETE FROM sala WHERE numero = ?";
+            String sql = "DELETE FROM sala WHERE idsala = ?";
 
             conectar(sql);
-            comando.setInt(1, sala.getNumero());
+            comando.setInt(1, sala.getId());
             comando.executeUpdate();
 
         } catch (SQLException ex) {
@@ -71,7 +71,7 @@ public class SalaDaoBd extends DaoBd<Sala> implements SalaDao {
 
     @Override
     public Sala buscarSalaPorNumero(int numero) {
-        String sql = "SELECT * FROM filme WHERE numero = ?";
+        String sql = "SELECT * FROM sala WHERE numero = ?";
 
         try {
             conectar(sql);
@@ -104,7 +104,7 @@ public class SalaDaoBd extends DaoBd<Sala> implements SalaDao {
     @Override
     public List<Sala> buscarSalaPorCapacidade(int capacidade) {
      List<Sala> listaSalas = new ArrayList<>();
-        String sql = "SELECT * FROM filme WHERE capacidade >= ?";
+        String sql = "SELECT * FROM sala WHERE capacidade >= ?";
 
         try {
             conectar(sql);

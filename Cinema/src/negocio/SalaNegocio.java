@@ -1,7 +1,5 @@
 package negocio;
 
-
-
 import dao.SalaDao;
 import dao_impldb.SalaDaoBd;
 import dominio.Sala;
@@ -17,6 +15,7 @@ public class SalaNegocio {
 
     public void salvar(Sala s) throws NegocioException {
         this.validarCamposObrigatorios(s);
+        this.validarNumExistente(s);
         salaDao.salvar(s);
     }
 
@@ -25,43 +24,43 @@ public class SalaNegocio {
     }
 
     public void deletar(Sala s) throws NegocioException {
-        if (s == null || s.getId() < 0) {
-            throw new NegocioException("Filme nao existe!");
+        if (s == null || s.getId() <= 0) {
+            throw new NegocioException("Sala nao existe!");
         }
-        filmeDao.deletar(filme);
+        salaDao.deletar(s);
     }
 
-    public void atualizar(Filme filme) throws NegocioException {
-        if (filme == null || filme.getCodigo() < 0) {
-            throw new NegocioException("Filme nao existe!");
+    public void atualizar(Sala s) throws NegocioException {
+        if (s == null || s.getId() <= 0) {
+            throw new NegocioException("Sala nao existe!");
         }
-        this.validarCamposObrigatorios(filme);
-        filmeDao.atualizar(filme);
+        this.validarCamposObrigatorios(s);
+        salaDao.atualizar(s);
     }
 
-    public Filme procurarFilmePorCod(int cod) throws NegocioException {
-        if (cod < 0) {
-            throw new NegocioException("Codigo Invalido");
+    public Sala procurarSalaPorNumero(int num) throws NegocioException {
+        if (num <= 0) {
+            throw new NegocioException("Numero de Sala Invalido");
         }
-        Filme filme = filmeDao.buscarFilmePorCod(cod);
+        Sala sala = salaDao.buscarSalaPorNumero(num);
 
-        return (filme);
+        return (sala);
     }
 
-    public List<Filme> procurarPorNomeFilme(String nome) throws NegocioException {
-        if (nome == null || nome.isEmpty()) {
-            throw new NegocioException("Campo nome nao informado");
+    public List<Sala> procurarPorCapacidade(int tamanho) throws NegocioException {
+        if (tamanho>0) {
+            throw new NegocioException("Capacidade Necessaria Para Sala Invalida");
         }
-        return(filmeDao.buscarFilmePorNome(nome));
+        return(salaDao.buscarSalaPorCapacidade(tamanho));
     }
 
-    public boolean FilmeExiste(int cod) {
-        Filme filme = filmeDao.buscarFilmePorCod(cod);
-        return (filme != null);
+    public boolean SalaExiste(int num) {
+        Sala sala = salaDao.buscarSalaPorNumero(num);
+        return (sala != null);
     }
 
     private void validarCamposObrigatorios(Sala s) throws NegocioException {
-         if (s == null || s.getNumero()>=0) {
+         if (s == null || s.getNumero()>0) {
             throw new NegocioException("Campo numero incorreto");
         }
         if(s == null || s.getCapacidade()>=20){
@@ -69,9 +68,9 @@ public class SalaNegocio {
         }
     }
 
-    private void validarCodExistente(Filme f) throws NegocioException {
-        if (FilmeExiste(f.getCodigo())) {
-            throw new NegocioException("Codigo ja existente");
+    private void validarNumExistente(Sala s) throws NegocioException {
+        if (SalaExiste(s.getNumero())) {
+            throw new NegocioException("Este Numero de Sala ja existe");
         }
     }
 
