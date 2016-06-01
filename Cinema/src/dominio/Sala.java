@@ -20,6 +20,15 @@ public class Sala {
         return id;
     }
 
+    public void setNumero(int numero) {
+        this.numero = numero;
+    }
+
+    public void setCapacidade(int capacidade) {
+        this.capacidade = capacidade;
+    }
+    
+
     
     public int getNumero() {
         return numero;

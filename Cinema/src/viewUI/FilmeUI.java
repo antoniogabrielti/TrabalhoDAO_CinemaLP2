@@ -191,7 +191,7 @@ class FilmeUI {
                 f.setSinopse(sinopse);
             }
             filmeNegocio.atualizar(f);
-            System.out.println("Paciente " + nome + " atualizado com sucesso!");
+            System.out.println("Filme " + f.getNome() + " atualizado com sucesso!");
                 }else{
                     System.out.println("Codigo do filme invalido!!!");
                     return;

@@ -60,10 +60,10 @@ public class SalaNegocio {
     }
 
     private void validarCamposObrigatorios(Sala s) throws NegocioException {
-         if (s == null || s.getNumero()>0) {
+         if (s == null || s.getNumero()<=0) {
             throw new NegocioException("Campo numero incorreto");
         }
-        if(s == null || s.getCapacidade()>=20){
+        if(s == null || s.getCapacidade()<20){
             throw new NegocioException("Campo capacidade tem que ser maior ou igual a 20(capacidade minima)");
         }
     }

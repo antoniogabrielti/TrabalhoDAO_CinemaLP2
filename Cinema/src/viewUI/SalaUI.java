@@ -52,9 +52,10 @@ class SalaUI {
     private void cadastrarSala() {
         System.out.println("===== Cadastro de Salas ======");
         int num = Console.scanInt("Digite o numero da Sala:");
+        
         try {
             if (salaNegocio.SalaExiste(num)) {
-                System.err.println("Sala com esse numero já existe, já cadastrada!!!");
+                System.out.println("Sala com esse numero já existe, já cadastrada!!!");
             } else {
                 int capacidade = Console.scanInt("Informe a capacidade dessa sala [sendo a capacidade minima 20]:");
                 salaNegocio.salvar(new Sala(num,capacidade));
@@ -147,6 +148,57 @@ class SalaUI {
             UIUtil.mostrarErro(ex.getMessage());
         }
     }
-    
-        
-}
+
+    private void atualizarSala() {
+        try {
+            if(this.mostrarSalas()){
+                System.out.println("Nao ha Salas cadastradas!!!");
+                return;
+            }else{
+               int num = Console.scanInt("Digite o numero da sala na qual deseja alterar os dados:");
+               Sala s = salaNegocio.procurarSalaPorNumero(num);
+                if(s!=null){
+                    System.out.println("-----------------------------");
+                    System.out.println("Sala");
+                    System.out.println("Numero: " + s.getNumero());
+                    System.out.println("Capacidade: " + s.getCapacidade());
+                    System.out.println("-----------------------------");
+                    System.out.println("Digite os dados que deseja alterar na sala [Vazio caso nao queira]");
+                    int numAlterado,capacidade;
+            do{
+                    numAlterado = Console.scanInt("Numero: ");
+            }while(!TestaNumeroEditar(numAlterado,s));
+            do{
+                capacidade = Console.scanInt("Capacidade: ");
+                if(capacidade<20){
+                    System.out.println("A capacidade minima das salas sao de 20!!!");
+                }else{
+                    s.setCapacidade(capacidade);
+                    break;
+                }
+            }while(capacidade<20);
+            
+            salaNegocio.atualizar(s);
+            System.out.println("Sala " + s.getNumero() + " atualizada com sucesso!");
+                }else{
+                    System.out.println("Numero de sala invalida!!!");
+                    return;
+                }
+            }
+        } catch (NegocioException ex) {
+            UIUtil.mostrarErro(ex.getMessage());
+        }
+    }
+    public boolean TestaNumeroEditar(int numAlterado,Sala s){
+          if (numAlterado!=s.getNumero() && numAlterado>0) {
+             if(!salaNegocio.SalaExiste(numAlterado))
+                  s.setNumero(numAlterado);
+                  return true;
+             }else{
+                  System.out.println("Esse numero de Sala ja esta cadastrado!!!");
+                  return false;
+             }
+          }
+    }
+
+
