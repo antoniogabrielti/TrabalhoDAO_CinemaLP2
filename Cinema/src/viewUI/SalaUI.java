@@ -88,6 +88,7 @@ class SalaUI {
 
     private void buscaSalaPorNumero() {
         System.out.println("######## Busca de Sala pelo Numero ############");
+        if(!salaNegocio.listar().isEmpty()){
         int numero = Console.scanInt("Informe o numero da sala para a busca:");
         try {
             Sala salaEncontrada = salaNegocio.procurarSalaPorNumero(numero);
@@ -103,10 +104,14 @@ class SalaUI {
         } catch (NegocioException ex) {
             UIUtil.mostrarErro(ex.getMessage());
         }
+      }else{
+            System.out.println("Nao ha nenhuma sala cadastrada!!!");
+        }
     }
 
     private void buscaSalaPorCapacidade() {
         System.out.println("######## Busca de Salas por Capacidade ############");
+        if(!salaNegocio.listar().isEmpty()){
         int capacidade = Console.scanInt("Informe a capacidade da qual necessita que a sala tenha:");
         try {
             List<Sala> SalasEncontradas = salaNegocio.procurarPorCapacidade(capacidade);
@@ -122,6 +127,9 @@ class SalaUI {
         }
         } catch (NegocioException ex) {
             UIUtil.mostrarErro(ex.getMessage());
+        }
+      }else{
+            System.out.println("Nao ha nenhuma sala cadastrada!!!");
         }
     }
 
@@ -164,12 +172,27 @@ class SalaUI {
                     System.out.println("Capacidade: " + s.getCapacidade());
                     System.out.println("-----------------------------");
                     System.out.println("Digite os dados que deseja alterar na sala [Vazio caso nao queira]");
-                    int numAlterado,capacidade;
+                    String numer,cap;
+                    Integer numAlterado,capacidade;
             do{
-                    numAlterado = Console.scanInt("Numero: ");
+                numer=Console.scanString("Numero: ");
+                if(!numer.isEmpty()){
+                    numAlterado = Integer.parseInt(numer);
+                }else{
+                    numAlterado=0;
+                    break;
+                }
+                
             }while(!TestaNumeroEditar(numAlterado,s));
             do{
-                capacidade = Console.scanInt("Capacidade: ");
+                cap=Console.scanString("Capacidade: ");
+                if(!cap.isEmpty()){
+                    capacidade = Integer.parseInt(cap);
+                }else{
+                    capacidade=0;
+                    break;
+                }
+                
                 if(capacidade<20){
                     System.out.println("A capacidade minima das salas sao de 20!!!");
                 }else{
@@ -191,12 +214,20 @@ class SalaUI {
     }
     public boolean TestaNumeroEditar(int numAlterado,Sala s){
           if (numAlterado!=s.getNumero() && numAlterado>0) {
-             if(!salaNegocio.SalaExiste(numAlterado))
+             if(!salaNegocio.SalaExiste(numAlterado)){
                   s.setNumero(numAlterado);
                   return true;
-             }else{
+                }else{
                   System.out.println("Esse numero de Sala ja esta cadastrado!!!");
                   return false;
+                }
+             }else{
+                  if(numAlterado<=0){
+                      System.err.println("Numero de Sala Invalido!!!");
+                      return false;
+                  }else{
+                  return true;
+                  }
              }
           }
     }

@@ -7,6 +7,7 @@ public class Secao implements Comparable<Secao> {
     private Date dataHora;
     private Filme filme;
     private int qtdDisponivel;
+    private int id;
 
     public Secao(Sala sala, Date dataHora, Filme filme) {
         this.sala = sala;
@@ -15,6 +16,11 @@ public class Secao implements Comparable<Secao> {
         this.qtdDisponivel=sala.getCapacidade();
     }
 
+    public int getId() {
+        return id;
+    }
+
+    
     public Sala getSala() {
         return sala;
     }

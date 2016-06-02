@@ -58,7 +58,15 @@ class FilmeUI {
                 System.err.println("Filme com esse nome já existe, já cadastrado!!!");
             } else {
                 String genero = Console.scanString("Informe o genero do Filme:");
+                if(genero.isEmpty()){
+                    System.err.println("Campo genero nao informado");
+                    return;
+                }
                 String sinopse = Console.scanString("Digite uma sinopse para este Filme:");
+                if(sinopse.isEmpty()){
+                    System.err.println("Campo sinopse nao informado");
+                    return;
+                }
                 filmeNegocio.salvar(new Filme(nome,genero,sinopse));
                 System.out.println("Filme "+nome+" cadastrado com sucesso!!!"); 
             }
@@ -93,31 +101,37 @@ class FilmeUI {
 
     private void buscaFilmePorNome() {
         System.out.println("######## Busca de Filme por Nome ############");
+        if(!filmeNegocio.listar().isEmpty()){
         String nome = Console.scanString("Informe o nome do filme para a busca:");
         try {
-            List<Filme> FilmeEncontrado = filmeNegocio.procurarPorNomeFilme(nome);
-                    if(!FilmeEncontrado.isEmpty()){
-            System.out.println(String.format("%-10s", "CÓDIGO") + "\t"
-                + String.format("%-20s", "|NOME") + "\t"
-                + String.format("%-20s", "|GENERO") + "\t"
-                + String.format("%-20s", "|SINOPSE"));
-            for (Filme filme : FilmeEncontrado) {
-                System.out.println(String.format("%-10s", filme.getCodigo()) + "\t"
+                List<Filme> FilmeEncontrado = filmeNegocio.procurarPorNomeFilme(nome);
+            if(!FilmeEncontrado.isEmpty()){
+                System.out.println(String.format("%-10s", "CÓDIGO") + "\t"
+                    + String.format("%-20s", "|NOME") + "\t"
+                    + String.format("%-20s", "|GENERO") + "\t"
+                    + String.format("%-20s", "|SINOPSE"));
+                for (Filme filme : FilmeEncontrado) {
+                    System.out.println(String.format("%-10s", filme.getCodigo()) + "\t"
                     + String.format("%-20s", "|" + filme.getNome()) + "\t"
                     + String.format("%-20s", "|" + filme.getGenero()) + "\t"
                     + String.format("%-20s", "|" + filme.getSinopse()));
+                }
+            }else{
+                 System.err.println("Nenhum Filme foi encontrado com este nome!!!");
             }
-        }else{
-            System.err.println("Nenhum Filme foi encontrado com este nome!!!");
-        }
+          
         } catch (NegocioException ex) {
             UIUtil.mostrarErro(ex.getMessage());
+        }
+       }else{
+            System.out.println("Nao ha filmes cadastrados!!!");
         }
 
     }
 
     private void buscaFilmePorCod() {
         System.out.println("######## Busca de Filme por Codigo ############");
+        if(!filmeNegocio.listar().isEmpty()){
         int cod = Console.scanInt("Informe o codigo do filme para a busca:");
         try {
             Filme FilmeEncontrado = filmeNegocio.procurarFilmePorCod(cod);
@@ -135,6 +149,9 @@ class FilmeUI {
         }
         } catch (NegocioException ex) {
             UIUtil.mostrarErro(ex.getMessage());
+        }
+        }else{
+            System.out.println("Nao ha filmes cadastrados!!!");
         }
     }
 

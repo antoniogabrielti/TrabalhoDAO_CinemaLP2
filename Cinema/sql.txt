@@ -8,3 +8,10 @@ create table sala(
 numero smallint not null,
 capacidade smallint not null,
 idsala serial primary key);
+
+create table secao(
+idsala integer not null references sala,
+horario date not null,
+cod integer not null references filme,
+qtddisponivel integer not null,
+idsecao serial primary key);

@@ -48,7 +48,7 @@ public class SalaNegocio {
     }
 
     public List<Sala> procurarPorCapacidade(int tamanho) throws NegocioException {
-        if (tamanho>0) {
+        if (tamanho<=0) {
             throw new NegocioException("Capacidade Necessaria Para Sala Invalida");
         }
         return(salaDao.buscarSalaPorCapacidade(tamanho));
