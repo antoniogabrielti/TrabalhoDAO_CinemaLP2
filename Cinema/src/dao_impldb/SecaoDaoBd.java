@@ -3,12 +3,14 @@ package dao_impldb;
 
 
 import dao.SecaoDao;
+import dominio.Filme;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import dominio.Sala;
 import dominio.Secao;
+import java.util.Date;
 
 
 public class SecaoDaoBd extends DaoBd<Secao> implements SecaoDao {
@@ -66,10 +68,11 @@ public class SecaoDaoBd extends DaoBd<Secao> implements SecaoDao {
             java.sql.Date horaSql = new java.sql.Date(secao.getDataHora().getTime());
             comando.setDate(2, horaSql);
             comando.setInt(3, secao.getFilme().getCodigo());
+            comando.setInt(4, secao.getQtdDisponivel());
+            comando.setInt(5, secao.getId());
             comando.executeUpdate();
-
         } catch (SQLException ex) {
-            System.err.println("Erro de Sistema - Problema ao atualizar Sala no Banco de Dados!");
+            System.err.println("Erro de Sistema - Problema ao atualizar Secao no Banco de Dados!");
             throw new RuntimeException(ex);
         } finally {
             fecharConexao();
@@ -77,71 +80,136 @@ public class SecaoDaoBd extends DaoBd<Secao> implements SecaoDao {
     }
 
     @Override
-    public Sala buscarSalaPorNumero(int numero) {
-        String sql = "SELECT * FROM sala WHERE numero = ?";
+    public List<Secao> buscarSecaoPorFilme(Filme f) {
+      List<Secao> listaSecao = new ArrayList<>();
+        String sql = "SELECT S.numero,S.capacidade,S.idsala,SC.horario"
+                + ",SC.qtddisponivel,SC.idsecao FROM secao SC join sala S on SC.idsala=S.idsala and SC.cod = ?";
 
         try {
             conectar(sql);
-            comando.setInt(1, numero);
+            comando.setInt(1, f.getCodigo());
 
             ResultSet resultado = comando.executeQuery();
 
             if (resultado.next()) {
-                int numeroSala = resultado.getInt("numero");
+                int numero = resultado.getInt("numero");
                 int capacidade = resultado.getInt("capacidade");
-                int id = resultado.getInt("idsala");
-                              
-                Sala s = new Sala(numeroSala, capacidade,id);
-
-                return s;
-
+                int idsala = resultado.getInt("idsala");
+                java.sql.Date dataSql = resultado.getDate("horario");
+                java.util.Date hora = new java.util.Date(dataSql.getTime());
+                int qtd = resultado.getInt("qtddisponivel");
+                int idsecao = resultado.getInt("idsecao");
+                Sala sala = new Sala(numero,capacidade,idsala);           
+                Secao s = new Secao(sala,hora,f,qtd,idsecao);    
+                
+                listaSecao.add(s);
+                
             }
 
         } catch (SQLException ex) {
-            System.err.println("Erro de Sistema - Problema ao buscar o Sala pelo codigo no Banco de Dados!");
+            System.err.println("Erro de Sistema - Problema ao buscar as Secoes pelo filme no Banco de Dados!");
             throw new RuntimeException(ex);
         } finally {
             fecharConexao();
         }
 
-        return (null);
+        return (listaSecao);
     }
     
 
     @Override
-    public List<Sala> buscarSalaPorCapacidade(int capacidade) {
-     List<Sala> listaSalas = new ArrayList<>();
-        String sql = "SELECT * FROM sala WHERE capacidade >= ?";
+    public List<Secao> buscarSecaoPorSala(Sala s) {
+      List<Secao> listaSecao = new ArrayList<>();
+        String sql = "SELECT F.nome,F.genero,F.sinopse,F.cod,SC.horario"
+                + ",SC.qtddisponivel,SC.idsecao FROM secao SC join filme F on F.cod=SC.cod and SC.idsala = ?";
 
         try {
             conectar(sql);
-            comando.setInt(1, capacidade);
-            ResultSet resultado = comando.executeQuery();
-            
-           while (resultado.next()) {
-                int numero = resultado.getInt("numero");
-                int capacidadeSala = resultado.getInt("capacidade");
-                int id = resultado.getInt("idsala");
-                              
-                Sala s = new Sala(numero, capacidadeSala,id);
+            comando.setInt(1, s.getId());
 
-                listaSalas.add(s);
-            
-          }
+            ResultSet resultado = comando.executeQuery();
+
+            if (resultado.next()) {
+                String nome = resultado.getString("nome");
+                String genero = resultado.getString("genero");
+                String sinopse = resultado.getString("sinopse");
+                int cod = resultado.getInt("cod");
+                
+                Filme f = new Filme(cod, nome, genero, sinopse);
+     
+                java.sql.Date dataSql = resultado.getDate("horario");
+                java.util.Date hora = new java.util.Date(dataSql.getTime());
+                int qtd = resultado.getInt("qtddisponivel");
+                int idsecao = resultado.getInt("idsecao");           
+                
+                listaSecao.add(new Secao(s,hora,f,qtd,idsecao));
+                
+            }
+
         } catch (SQLException ex) {
-            System.err.println("Erro de Sistema - Problema ao buscar o Sala pelo Nome no Banco de Dados!");
+            System.err.println("Erro de Sistema - Problema ao buscar as Secoes pela sala no Banco de Dados!");
             throw new RuntimeException(ex);
         } finally {
             fecharConexao();
         }
-        return listaSalas;
+
+        return (listaSecao);
     }
-
+    
     @Override
-    public List<Sala> listar() {
-        List<Sala> listaSala = new ArrayList<>();
+    public List<Secao> buscarSecaoPorHorario(Date hora) {
+      List<Secao> listaSecao = new ArrayList<>();
+        String sql = "select F.nome,F.genero,F.sinopse,F.cod,S.numero,S.capacidade,S.idsala,SC.horario,"
+                + "SC.qtddisponivel,SC.idsecao from secao SC join sala S\n" +
+                "on SC.idsala=S.idsala join filme F on SC.cod=F.cod and SC.horario= '?' ;";
 
-        String sql = "SELECT * FROM sala";
+        try {
+            conectar(sql);
+            java.sql.Date horario = new java.sql.Date(hora.getTime());
+            comando.setDate(1, horario);
+
+            ResultSet resultado = comando.executeQuery();
+
+            if (resultado.next()) {
+                String nome = resultado.getString("nome");
+                String genero = resultado.getString("genero");
+                String sinopse = resultado.getString("sinopse");
+                int cod = resultado.getInt("cod");
+                
+                Filme f = new Filme(cod,nome,genero,sinopse);
+                
+                int numero = resultado.getInt("numero");
+                int capacidade = resultado.getInt("capacidade");
+                int id = resultado.getInt("idsala");
+                              
+                Sala s = new Sala(numero, capacidade,id);
+
+
+                int qtd = resultado.getInt("qtddisponivel");
+                int idsecao = resultado.getInt("idsecao");
+                
+                
+                listaSecao.add(new Secao(s, hora, f, qtd, idsecao));
+                
+            }
+
+        } catch (SQLException ex) {
+            System.err.println("Erro de Sistema - Problema ao buscar o Secao pelo filme no Banco de Dados!");
+            throw new RuntimeException(ex);
+        } finally {
+            fecharConexao();
+        }
+
+        return (listaSecao);
+    }
+    
+    @Override
+    public List<Secao> listar() {
+        List<Secao> listaSecao = new ArrayList<>();
+
+        String sql = "select F.nome,F.genero,F.sinopse,F.cod,S.numero,S.capacidade,S.idsala,SC.horario,"
+                + "SC.qtddisponivel,SC.idsecao from secao SC join sala S\n" +
+                "on SC.idsala=S.idsala join filme F on SC.cod=F.cod;";
 
         try {
             conectar(sql);
@@ -149,24 +217,37 @@ public class SecaoDaoBd extends DaoBd<Secao> implements SecaoDao {
             ResultSet resultado = comando.executeQuery();
 
             while (resultado.next()) {
+                String nome = resultado.getString("nome");
+                String genero = resultado.getString("genero");
+                String sinopse = resultado.getString("sinopse");
+                int cod = resultado.getInt("cod");
+                
+                Filme f = new Filme(cod,nome,genero,sinopse);
+                
                 int numero = resultado.getInt("numero");
                 int capacidade = resultado.getInt("capacidade");
                 int id = resultado.getInt("idsala");
                               
                 Sala s = new Sala(numero, capacidade,id);
 
-                listaSala.add(s);
+                java.sql.Date dataSql = resultado.getDate("horario");
+                java.util.Date hora = new java.util.Date(dataSql.getTime());
+                int qtd = resultado.getInt("qtddisponivel");
+                int idsecao = resultado.getInt("idsecao");
+                
+                
+                listaSecao.add(new Secao(s, hora, f, qtd, idsecao));
             
 
             }
 
         } catch (SQLException ex) {
-            System.err.println("Erro de Sistema - Problema ao buscar os filmes do Banco de Dados!");
+            System.err.println("Erro de Sistema - Problema ao buscar as secoes do Banco de Dados!");
             throw new RuntimeException(ex);
         } finally {
             fecharConexao();
         }
 
-        return (listaSala);
+        return (listaSecao);
     }
 }

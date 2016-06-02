@@ -16,6 +16,14 @@ public class Secao implements Comparable<Secao> {
         this.qtdDisponivel=sala.getCapacidade();
     }
 
+    public Secao(Sala sala, Date hora, Filme f, int qtd, int idsecao) {
+        this.sala = sala;
+        this.dataHora = hora;
+        this.filme = f;
+        this.qtdDisponivel=qtd;
+        this.id=idsecao;
+    }
+
     public int getId() {
         return id;
     }
