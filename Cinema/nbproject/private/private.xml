@@ -3,10 +3,19 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/Users/juliano/Desktop/LP2/TrabalhoDAO_CinemaLP2/Cinema/src/viewUI/SecaoUI.java</file>
             <file>file:/C:/Users/juliano/Desktop/LP2/TrabalhoDAO_CinemaLP2/Cinema/src/dominio/Secao.java</file>
+            <file>file:/C:/Users/juliano/Desktop/LP2/TrabalhoDAO_CinemaLP2/Cinema/src/util/DateUtil.java</file>
             <file>file:/C:/Users/juliano/Desktop/LP2/TrabalhoDAO_CinemaLP2/Cinema/src/negocio/SecaoNegocio.java</file>
+            <file>file:/C:/Users/juliano/Desktop/LP2/TrabalhoDAO_CinemaLP2/Cinema/src/negocio/SalaNegocio.java</file>
             <file>file:/C:/Users/juliano/Desktop/LP2/TrabalhoDAO_CinemaLP2/Cinema/src/dao_impldb/SecaoDaoBd.java</file>
+            <file>file:/C:/Users/juliano/Desktop/LP2/TrabalhoDAO_CinemaLP2/Cinema/src/cinema/Cinema.java</file>
+            <file>file:/C:/Users/juliano/Desktop/LP2/TrabalhoDAO_CinemaLP2/Cinema/src/viewUI/MainUI.java</file>
+            <file>file:/C:/Users/juliano/Desktop/LP2/TrabalhoDAO_CinemaLP2/Cinema/src/viewUI/FilmeUI.java</file>
+            <file>file:/C:/Users/juliano/Desktop/LP2/TrabalhoDAO_CinemaLP2/Cinema/src/viewUI/SalaUI.java</file>
+            <file>file:/C:/Users/juliano/Desktop/LP2/TrabalhoDAO_CinemaLP2/Cinema/src/dao/Dao.java</file>
             <file>file:/C:/Users/juliano/Desktop/LP2/TrabalhoDAO_CinemaLP2/Cinema/src/dao/SecaoDao.java</file>
+            <file>file:/C:/Users/juliano/Desktop/LP2/TrabalhoDAO_CinemaLP2/Cinema/src/view/menu/SecaoMenu.java</file>
         </group>
     </open-files>
 </project-private>

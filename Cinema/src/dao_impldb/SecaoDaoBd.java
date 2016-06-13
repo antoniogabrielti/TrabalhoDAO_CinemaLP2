@@ -24,8 +24,8 @@ public class SecaoDaoBd extends DaoBd<Secao> implements SecaoDao {
          
             conectarObtendoId(sql);
             comando.setInt(1, secao.getSala().getId());
-            java.sql.Date horaSql = new java.sql.Date(secao.getDataHora().getTime());
-            comando.setDate(2, horaSql);
+            java.sql.Time horaSql = new java.sql.Time(secao.getDataHora().getTime());
+            comando.setTime(2, horaSql);
             comando.setInt(3, secao.getFilme().getCodigo());
             comando.setInt(4, secao.getQtdDisponivel());
             
@@ -61,12 +61,12 @@ public class SecaoDaoBd extends DaoBd<Secao> implements SecaoDao {
     public void atualizar(Secao secao) {
         try {
             String sql = "UPDATE secao SET idsala=?, horario=?,cod=?,qtddisponivel=?"
-                    + "WHERE idsala=?";
+                    + "WHERE idsecao=?";
 
             conectar(sql);
             comando.setInt(1, secao.getSala().getId());
-            java.sql.Date horaSql = new java.sql.Date(secao.getDataHora().getTime());
-            comando.setDate(2, horaSql);
+            java.sql.Time horaSql = new java.sql.Time(secao.getDataHora().getTime());
+            comando.setTime(2, horaSql);
             comando.setInt(3, secao.getFilme().getCodigo());
             comando.setInt(4, secao.getQtdDisponivel());
             comando.setInt(5, secao.getId());
@@ -95,7 +95,7 @@ public class SecaoDaoBd extends DaoBd<Secao> implements SecaoDao {
                 int numero = resultado.getInt("numero");
                 int capacidade = resultado.getInt("capacidade");
                 int idsala = resultado.getInt("idsala");
-                java.sql.Date dataSql = resultado.getDate("horario");
+                java.sql.Time dataSql = resultado.getTime("horario");
                 java.util.Date hora = new java.util.Date(dataSql.getTime());
                 int qtd = resultado.getInt("qtddisponivel");
                 int idsecao = resultado.getInt("idsecao");
@@ -137,7 +137,7 @@ public class SecaoDaoBd extends DaoBd<Secao> implements SecaoDao {
                 
                 Filme f = new Filme(cod, nome, genero, sinopse);
      
-                java.sql.Date dataSql = resultado.getDate("horario");
+                java.sql.Time dataSql = resultado.getTime("horario");
                 java.util.Date hora = new java.util.Date(dataSql.getTime());
                 int qtd = resultado.getInt("qtddisponivel");
                 int idsecao = resultado.getInt("idsecao");           
@@ -165,8 +165,8 @@ public class SecaoDaoBd extends DaoBd<Secao> implements SecaoDao {
 
         try {
             conectar(sql);
-            java.sql.Date horario = new java.sql.Date(hora.getTime());
-            comando.setDate(1, horario);
+            java.sql.Time horario = new java.sql.Time(hora.getTime());
+            comando.setTime(1, horario);
 
             ResultSet resultado = comando.executeQuery();
 
@@ -230,7 +230,7 @@ public class SecaoDaoBd extends DaoBd<Secao> implements SecaoDao {
                               
                 Sala s = new Sala(numero, capacidade,id);
 
-                java.sql.Date dataSql = resultado.getDate("horario");
+                java.sql.Time dataSql = resultado.getTime("horario");
                 java.util.Date hora = new java.util.Date(dataSql.getTime());
                 int qtd = resultado.getInt("qtddisponivel");
                 int idsecao = resultado.getInt("idsecao");

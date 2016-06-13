@@ -4,8 +4,10 @@ package negocio;
 import dao.SecaoDao;
 import dao_impldb.SalaDaoBd;
 import dao_impldb.SecaoDaoBd;
+import dominio.Filme;
 import dominio.Sala;
 import dominio.Secao;
+import java.util.Date;
 import java.util.List;
 
 public class SecaoNegocio {
@@ -18,62 +20,81 @@ public class SecaoNegocio {
 
     public void salvar(Secao s) throws NegocioException {
         this.validarCamposObrigatorios(s);
-        this.validarNumExistente(s);
+        this.validarSecaoExistente(s);
         secaoDao.salvar(s);
     }
 
-    public List<Sala> listar() {
-        return (salaDao.listar());
+    public List<Secao> listar() {
+        return (secaoDao.listar());
     }
 
-    public void deletar(Sala s) throws NegocioException {
+    public void deletar(Secao s) throws NegocioException {
         if (s == null || s.getId() <= 0) {
-            throw new NegocioException("Sala nao existe!");
+            throw new NegocioException("Secao nao existe!");
         }
-        salaDao.deletar(s);
+        secaoDao.deletar(s);
     }
 
-    public void atualizar(Sala s) throws NegocioException {
+    public void atualizar(Secao s) throws NegocioException {
         if (s == null || s.getId() <= 0) {
-            throw new NegocioException("Sala nao existe!");
+            throw new NegocioException("Secao nao existe!");
         }
         this.validarCamposObrigatorios(s);
-        salaDao.atualizar(s);
+        this.validarSecaoExistente(s);
+        secaoDao.atualizar(s);
     }
 
-    public Sala procurarSalaPorNumero(int num) throws NegocioException {
-        if (num <= 0) {
-            throw new NegocioException("Numero de Sala Invalido");
+    public List<Secao> procurarSecaoPorFilme(Filme f) throws NegocioException {
+        if (f == null || f.getNome().isEmpty()) {
+            throw new NegocioException("Filme nao informado");
         }
-        Sala sala = salaDao.buscarSalaPorNumero(num);
+        List<Secao> Secoes = secaoDao.buscarSecaoPorFilme(f);
 
-        return (sala);
+        return (Secoes);
     }
 
-    public List<Sala> procurarPorCapacidade(int tamanho) throws NegocioException {
-        if (tamanho<=0) {
-            throw new NegocioException("Capacidade Necessaria Para Sala Invalida");
+       public List<Secao> procurarSecaoPorHorario(Date h) throws NegocioException {
+        if (h == null) {
+            throw new NegocioException("horario nao informado");
         }
-        return(salaDao.buscarSalaPorCapacidade(tamanho));
-    }
+        List<Secao> Secoes = secaoDao.buscarSecaoPorHorario(h);
 
-    public boolean SalaExiste(int num) {
-        Sala sala = salaDao.buscarSalaPorNumero(num);
-        return (sala != null);
+        return (Secoes);
     }
+       
+       public List<Secao> procurarSecaoPorSala(Sala s) throws NegocioException {
+        if(s == null || s.getNumero()<=0){
+            throw new NegocioException("Sala nao informada");
+        }
+        List<Secao> Secoes = secaoDao.buscarSecaoPorSala(s);
 
+        return (Secoes);
+    }
+    
     private void validarCamposObrigatorios(Secao s) throws NegocioException {
          if (s.getFilme() == null || s.getFilme().getNome().isEmpty()) {
             throw new NegocioException("Filme nao informado");
         }
-        if(s.getSala() == null || s.getSala().getNumero()>0){
+        if(s.getSala() == null || s.getSala().getNumero()<=0){
             throw new NegocioException("Sala nao informada");
         }
     }
 
-    private void validarNumExistente(Sala s) throws NegocioException {
-        if (SalaExiste(s.getNumero())) {
-            throw new NegocioException("Este Numero de Sala ja existe");
+    private void validarSecaoExistente(Secao s) throws NegocioException {
+        List<Secao> salasEncontradas = secaoDao.buscarSecaoPorSala(s.getSala());
+        
+        if (!salasEncontradas.isEmpty()) {
+            for(Secao sec : salasEncontradas){
+                if(sec.getDataHora().equals(s.getDataHora())){
+                    if(sec.getFilme().getCodigo()==s.getFilme().getCodigo()){
+                        throw new NegocioException("Secao ja cadastrada, voce esta duplicando!!!");
+                    }else{
+                        throw new NegocioException("Ja ha uma secao nesta sala e horario!!!");
+                    }
+                    
+                }
+        }
+            
         }
     }
 
