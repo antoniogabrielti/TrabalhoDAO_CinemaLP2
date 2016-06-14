@@ -105,7 +105,7 @@ public class FilmeDaoBd extends DaoBd<Filme> implements FilmeDao {
     @Override
     public List<Filme> buscarFilmePorNome(String Nome) {
      List<Filme> listaFilmes = new ArrayList<>();
-        String sql = "SELECT * FROM filme WHERE nome LIKE ?";
+        String sql = "SELECT * FROM filme WHERE lower(nome) LIKE lower(?)";
 
         try {
             conectar(sql);

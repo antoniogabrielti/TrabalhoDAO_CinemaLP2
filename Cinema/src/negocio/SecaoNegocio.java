@@ -61,6 +61,14 @@ public class SecaoNegocio {
 
         return (Secoes);
     }
+       public Secao procurarSecaoPorID(int ID) throws NegocioException {
+        if (ID<=0) {
+            throw new NegocioException("ID da Secao e Incorreto!!!");
+        }
+        Secao s = secaoDao.buscarSecaoPorID(ID);
+
+        return (s);
+    }
        
        public List<Secao> procurarSecaoPorSala(Sala s) throws NegocioException {
         if(s == null || s.getNumero()<=0){
@@ -85,7 +93,7 @@ public class SecaoNegocio {
         
         if (!salasEncontradas.isEmpty()) {
             for(Secao sec : salasEncontradas){
-                if(sec.getDataHora().equals(s.getDataHora())){
+                if(sec.getDataHora().equals(s.getDataHora()) && sec.getId()!=s.getId()){
                     if(sec.getFilme().getCodigo()==s.getFilme().getCodigo()){
                         throw new NegocioException("Secao ja cadastrada, voce esta duplicando!!!");
                     }else{

@@ -52,7 +52,8 @@ class FilmeUI {
 
     private void cadastrarFilmes() {
         System.out.println("========= Cadastro de Filmes ============");
-        String nome = Console.scanString("Digite o nome do Filme:");
+        String nomedig = Console.scanString("Digite o nome do Filme:");
+        String nome = this.retiraCaracteresEspeciais(nomedig);
         try {
             if (validaNome(nome)) {
                 System.err.println("Filme com esse nome já existe, já cadastrado!!!");
@@ -223,11 +224,27 @@ class FilmeUI {
         List<Filme> listaFilmesNome = filmeNegocio.procurarPorNomeFilme(nome);
         if(!listaFilmesNome.isEmpty()){
             for(Filme f : listaFilmesNome){
-              if(f.getNome().equals(nome)){
+              if(f.getNome().equalsIgnoreCase(nome)){
                   return true;
               }  
             }
         }
         return false;
     }
+    private String retiraCaracteresEspeciais(String stringFonte){
+       String passa = stringFonte;
+       passa = passa.replaceAll("[ÂÀÁÄÃ]", "A");
+       passa = passa.replaceAll("[âãàáä]", "a");
+       passa = passa.replaceAll("[ÊÈÉË]", "E");
+       passa = passa.replaceAll("[êèéë]", "e");
+       passa = passa.replaceAll("[ÎÍÌÏ]", "I");
+       passa = passa.replaceAll("[îíìï]", "i");
+       passa = passa.replaceAll("[ÔÕÒÓÖ]", "O");
+       passa = passa.replaceAll("[ôõòóö]", "o");
+       passa = passa.replaceAll("[ÛÙÚÜ]", "U");
+       passa = passa.replaceAll("[ûúùü]", "u");
+       passa = passa.replaceAll("Ç", "C");
+       passa = passa.replaceAll("ç", "c");
+       return passa;
+   }
 }

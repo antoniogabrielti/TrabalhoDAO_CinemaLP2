@@ -11,4 +11,5 @@ public interface SecaoDao extends Dao<Secao>{
     public List<Secao> buscarSecaoPorFilme(Filme f);
     public List<Secao> buscarSecaoPorHorario(Date hora);
     public List<Secao> buscarSecaoPorSala(Sala s);
+    public Secao buscarSecaoPorID(int ID);
  }

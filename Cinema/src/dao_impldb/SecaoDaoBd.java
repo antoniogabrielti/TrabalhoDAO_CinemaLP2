@@ -91,7 +91,7 @@ public class SecaoDaoBd extends DaoBd<Secao> implements SecaoDao {
 
             ResultSet resultado = comando.executeQuery();
 
-            if (resultado.next()) {
+            while (resultado.next()) {
                 int numero = resultado.getInt("numero");
                 int capacidade = resultado.getInt("capacidade");
                 int idsala = resultado.getInt("idsala");
@@ -129,7 +129,7 @@ public class SecaoDaoBd extends DaoBd<Secao> implements SecaoDao {
 
             ResultSet resultado = comando.executeQuery();
 
-            if (resultado.next()) {
+            while (resultado.next()) {
                 String nome = resultado.getString("nome");
                 String genero = resultado.getString("genero");
                 String sinopse = resultado.getString("sinopse");
@@ -161,7 +161,7 @@ public class SecaoDaoBd extends DaoBd<Secao> implements SecaoDao {
       List<Secao> listaSecao = new ArrayList<>();
         String sql = "select F.nome,F.genero,F.sinopse,F.cod,S.numero,S.capacidade,S.idsala,SC.horario,"
                 + "SC.qtddisponivel,SC.idsecao from secao SC join sala S\n" +
-                "on SC.idsala=S.idsala join filme F on SC.cod=F.cod and SC.horario= '?' ;";
+                "on SC.idsala=S.idsala join filme F on SC.cod=F.cod and SC.horario= ? ;";
 
         try {
             conectar(sql);
@@ -170,7 +170,7 @@ public class SecaoDaoBd extends DaoBd<Secao> implements SecaoDao {
 
             ResultSet resultado = comando.executeQuery();
 
-            if (resultado.next()) {
+            while (resultado.next()) {
                 String nome = resultado.getString("nome");
                 String genero = resultado.getString("genero");
                 String sinopse = resultado.getString("sinopse");
@@ -249,5 +249,50 @@ public class SecaoDaoBd extends DaoBd<Secao> implements SecaoDao {
         }
 
         return (listaSecao);
+    }
+        public Secao buscarSecaoPorID(int ID) {
+        String sql = "select F.nome,F.genero,F.sinopse,F.cod,S.numero,S.capacidade,S.idsala,SC.horario,"
+                + "SC.qtddisponivel,SC.idsecao from secao SC join sala S\n" +
+                "on SC.idsala=S.idsala join filme F on SC.cod=F.cod and SC.idsecao= ?;";
+
+        try {
+            conectar(sql);
+            comando.setInt(1, ID);
+
+            ResultSet resultado = comando.executeQuery();
+
+            if (resultado.next()) {
+                String nome = resultado.getString("nome");
+                String genero = resultado.getString("genero");
+                String sinopse = resultado.getString("sinopse");
+                int cod = resultado.getInt("cod");
+                
+                Filme f = new Filme(cod,nome,genero,sinopse);
+                
+                int numero = resultado.getInt("numero");
+                int capacidade = resultado.getInt("capacidade");
+                int id = resultado.getInt("idsala");
+                              
+                Sala s = new Sala(numero, capacidade,id);
+
+                java.sql.Time dataSql = resultado.getTime("horario");
+                java.util.Date hora = new java.util.Date(dataSql.getTime());
+                int qtd = resultado.getInt("qtddisponivel");
+                int idsecao = resultado.getInt("idsecao");
+                
+                Secao secao = new Secao(s, hora,f, qtd, idsecao);
+
+                return secao;
+
+            }
+
+        } catch (SQLException ex) {
+            System.err.println("Erro de Sistema - Problema ao buscar o Filme pelo codigo no Banco de Dados!");
+            throw new RuntimeException(ex);
+        } finally {
+            fecharConexao();
+        }
+
+        return (null);
     }
 }

@@ -8,6 +8,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import negocio.FilmeNegocio;
 import negocio.NegocioException;
 import negocio.SalaNegocio;
@@ -18,9 +20,17 @@ import view.menu.SecaoMenu;
 
 class SecaoUI {
     private SecaoNegocio secaoNegocio;
+    private FilmeUI filmesCadastrados;
+    private FilmeNegocio filmeNegocio;
+    private SalaUI salasCadastradas;
+    private SalaNegocio salaNegocio;
 
     public SecaoUI() {
         secaoNegocio = new SecaoNegocio();
+        filmesCadastrados = new FilmeUI();
+        filmeNegocio = new FilmeNegocio();
+        salasCadastradas = new SalaUI();
+        salaNegocio = new SalaNegocio();
     }
     public void executar() {
         int opcao = 0;
@@ -44,10 +54,10 @@ class SecaoUI {
                     buscaSecoesPorSala();
                     break;
                 case SecaoMenu.OP_ATUALIZASECAO:
-                    //AtualizarSecao();
+                    AtualizarSecao();
                     break;
                 case SecaoMenu.OP_DELETESECAO:
-                    //ExcluirSecao();
+                    ExcluirSecao();
                     break;
                 case SecaoMenu.OP_VOLTAR:
                     System.out.println("Retornando ao menu principal..");
@@ -64,22 +74,17 @@ class SecaoUI {
             Date horario=null;
             try {
                horario = DateUtil.stringToHour(dataHora);
-            
- 
-                SalaUI sala = new SalaUI();
-                sala.mostrarSalas();
+                        
+                salasCadastradas.mostrarSalas();
                 int numeroSala = Console.scanInt("Informe o numero da sala escolhida:");
-                SalaNegocio salas = new SalaNegocio();
-                Sala Sala = salas.procurarSalaPorNumero(numeroSala);
+                Sala Sala = salaNegocio.procurarSalaPorNumero(numeroSala);
                 if(Sala==null){
                     System.out.println("Sala Invalida!!!");
                     return;
                 }else{
-                    FilmeUI filmescadastrados = new FilmeUI();
-                    filmescadastrados.mostrarFilmes();
+                    filmesCadastrados.mostrarFilmes();
                     int codigo = Console.scanInt("Informe o codigo do filme para a secao:");
-                    FilmeNegocio Filmes = new FilmeNegocio();
-                    Filme FilmeEscolhido = Filmes.procurarFilmePorCod(codigo);
+                    Filme FilmeEscolhido = filmeNegocio.procurarFilmePorCod(codigo);
                     if(FilmeEscolhido==null){
                         System.out.println("Filme Invalido!!!");
                         return;
@@ -131,25 +136,37 @@ class SecaoUI {
 
     private void buscaSecoesPorFilme() {
         System.out.println("######## Busca de Secoes por Filme ############");
-        FilmeUI listaFilmes = new FilmeUI(Filmes);
-        listaFilmes.mostrarFilmes();
+        filmesCadastrados.mostrarFilmes();
         int cod_filme=Console.scanInt("Informe o codigo do filme que deseja pesquisar as secoes:");
-        List<Secao> SecoesEncontrada=listaSecao.MostrarSecoesDeUmFilme(cod_filme);
-        if(!SecoesEncontrada.isEmpty()){
-            System.out.println("<< Secoes com este filme >>");
-            System.out.println(String.format("%-10s", "NUMERO DA SALA") + "\t"
-                + String.format("%-20s", "|HORARIO") + "\t"
-                + String.format("%-20s", "|FILME") + "\t"
-                + String.format("%-20s", "|GENERO"));
-         for (Secao S : SecoesEncontrada) {
-            String horario = DateUtil.hourToString(S.getDataHora());
-            System.out.println(String.format("%-10s", S.getSala().getNumero()) + "\t"
-                    + String.format("%-20s", "|" + horario) + "\t"
-                    + String.format("%-20s", "|" + S.getFilme().getNome()) + "\t"
-                    + String.format("%-20s", "|" + S.getFilme().getGenero()));
-         }
-        }else{
-            System.out.println("Nenhuma Secao foi encontrada para este filme!!!");
+       
+        try {
+           Filme filme = filmeNegocio.procurarFilmePorCod(cod_filme);
+           if(filme!=null){
+               List<Secao> SecoesEncontrada=secaoNegocio.procurarSecaoPorFilme(filme);
+            if(!SecoesEncontrada.isEmpty()){
+                System.out.println("<< Secoes com este filme >>");
+                System.out.println(String.format("%-10s", "ID") + "\t"
+                    + String.format("%-20s", "|NUMERO DA SALA") + "\t"
+                    + String.format("%-20s", "|HORARIO") + "\t"
+                    + String.format("%-20s", "|FILME") + "\t"
+                    + String.format("%-20s", "|GENERO"));
+            for (Secao S : SecoesEncontrada) {
+                String horario = DateUtil.hourToString(S.getDataHora());
+                    System.out.println(String.format("%-10s", S.getId()) + "\t"
+                        + String.format("%-20s", "|" + S.getSala().getNumero()) + "\t"
+                        + String.format("%-20s", "|" + horario) + "\t"
+                        + String.format("%-20s", "|" + S.getFilme().getNome()) + "\t"
+                        + String.format("%-20s", "|" + S.getFilme().getGenero()));
+                }
+            }else{
+                System.out.println("Nenhuma Secao foi encontrada para este filme!!!");
+            }
+           }else{
+               System.err.println("Codigo do filme incorreto!!!");
+           }  
+        } catch (NegocioException ex) {
+            UIUtil.mostrarErro(ex.getMessage());
+            return;
         }
     }
 
@@ -159,60 +176,200 @@ class SecaoUI {
         Date horario=null;
             try {
                horario = DateUtil.stringToHour(hora_secao);
-               
-            } catch (ParseException ex) {
-                System.out.println("Data ou hora no formato inválido!");
-            }
-        List<Secao> SecoesEncontrada=listaSecao.MostrarSecoesEmUmaHora(horario);
+             
+            List<Secao> SecoesEncontrada=secaoNegocio.procurarSecaoPorHorario(horario);
         if(!SecoesEncontrada.isEmpty()){
             System.out.println("<< Secoes no horario das "+hora_secao+">>");
-            System.out.println(String.format("%-10s", "NUMERO DA SALA") + "\t"
+            System.out.println(String.format("%-10s", "ID") + "\t"
+                + String.format("%-20s", "|NUMERO DA SALA") + "\t"
                 + String.format("%-20s", "|HORARIO") + "\t"
                 + String.format("%-20s", "|FILME") + "\t"
                 + String.format("%-20s", "|GENERO"));
-         for (Secao S : SecoesEncontrada) {
-            String horaEncontrada = DateUtil.hourToString(S.getDataHora());
-            System.out.println(String.format("%-10s", S.getSala().getNumero()) + "\t"
+            for (Secao S : SecoesEncontrada) {
+                String horaEncontrada = DateUtil.hourToString(S.getDataHora());
+                System.out.println(String.format("%-10s", S.getId()) + "\t"
+                    + String.format("%-20s", "|" + S.getSala().getNumero()) + "\t"
                     + String.format("%-20s", "|" + horaEncontrada) + "\t"
                     + String.format("%-20s", "|" + S.getFilme().getNome()) + "\t"
                     + String.format("%-20s", "|" + S.getFilme().getGenero()));
-         }
+            }
         }else{
             System.out.println("Nenhuma Secao foi encontrada neste horario!!!");
         }
+         } catch (ParseException ex) {
+                System.out.println("hora no formato invalido!");
+                return;
+         } catch (NegocioException ex) {
+            UIUtil.mostrarErro(ex.getMessage());
+            return;
+         }
     }
 
     private void buscaSecoesPorSala() {
         System.out.println("######## Busca de Secoes por Sala ############");
-        SalaUI listaSalas = new SalaUI(Salas);
-        listaSalas.mostrarSalas();
-        int num_sala=Console.scanInt("Informe o numero da sala que deseja pesquisar as secoes:");
-        List<Secao> SecoesEncontrada=listaSecao.MostrarSecoesEmUmaSala(num_sala);
+          this.salasCadastradas.mostrarSalas();
+          int num_sala=Console.scanInt("Informe o numero da sala que deseja pesquisar as secoes:");
+          try{
+            Sala s = this.salaNegocio.procurarSalaPorNumero(num_sala);
+            if(s==null){
+                System.err.println("Numero de sala nao existe!!!");
+                return;
+            }
+            List<Secao> SecoesEncontrada=secaoNegocio.procurarSecaoPorSala(s);
         if(!SecoesEncontrada.isEmpty()){
             System.out.println("<< Secoes com esta sala >>");
-            System.out.println(String.format("%-10s", "NUMERO DA SALA") + "\t"
+            System.out.println(String.format("%-10s", "ID") + "\t"
+                + String.format("%-20s", "|NUMERO DA SALA") + "\t"
                 + String.format("%-20s", "|HORARIO") + "\t"
                 + String.format("%-20s", "|FILME") + "\t"
                 + String.format("%-20s", "|GENERO"));
          for (Secao S : SecoesEncontrada) {
             String horario = DateUtil.hourToString(S.getDataHora());
-            System.out.println(String.format("%-10s", S.getSala().getNumero()) + "\t"
+            System.out.println(String.format("%-10s", S.getId()) + "\t"
+                    + String.format("%-20s", "|" + S.getSala().getNumero()) + "\t"
                     + String.format("%-20s", "|" + horario) + "\t"
                     + String.format("%-20s", "|" + S.getFilme().getNome()) + "\t"
                     + String.format("%-20s", "|" + S.getFilme().getGenero()));
          }
         }else{
             System.out.println("Nenhuma Secao foi encontrada para esta sala!!!");
-        }  
+        } 
+        } catch (NegocioException ex) {
+            UIUtil.mostrarErro(ex.getMessage());
+            return;
+         }
     }
 
-    private void MostraFilmesEmMaisSecoes() {
-        System.out.println("************ Relatório de filmes - Numero de Secoes ***********");
-        listaSecao.FilmesEmMaisSecoes();
+    private void AtualizarSecao() {
+         try {
+            if(this.mostrarSecoes()){
+                System.out.println("Nao ha Secoes cadastradas!!!");
+                return;
+            }else{
+               int cod = Console.scanInt("Digite o ID da secao no qual deseja alterar os dados:");
+               Secao s = secaoNegocio.procurarSecaoPorID(cod);
+                if(s!=null){
+                    String Hora = DateUtil.hourToString(s.getDataHora());
+                    System.out.println("-----------------------------");
+                    System.out.println("Secao");
+                    System.out.println("ID Secao: " + s.getId());
+                    System.out.println("Sala: " + s.getSala().getNumero());
+                    System.out.println("Horario: " + Hora);
+                    System.out.println("Codigo do Filme: " + s.getFilme().getCodigo());
+                    System.out.println("Filme: "+s.getFilme().getNome());
+                    System.out.println("-----------------------------");
+                    System.out.println("Digite os dados que deseja alterar na secao [Vazio caso nao queira]");
+            Sala sala=null;
+            do{
+                
+            Integer numsala;
+            this.salasCadastradas.mostrarSalas();
+            String num = Console.scanString("numero de sala: ");
+            if(num!=null && !num.isEmpty()){
+                numsala = Integer.parseInt(num);
+                if(numsala>0){
+                 sala = this.salaNegocio.procurarSalaPorNumero(numsala);
+                    if(sala==null){
+                        System.out.println("Nenhuma Sala Encontrada!!!");
+                    }
+                }else{
+                    sala=null;
+                    System.err.println("Numero de Sala Invalido!!!");
+                }
+                }else{
+                    numsala=s.getSala().getNumero();
+                    sala=s.getSala();
+                }
+            }while(sala==null);
+            Date horario=null;
+            do{
+                String hora_secao=Console.scanString("Horario: ");
+                if(hora_secao!=null && !hora_secao.isEmpty()){
+                    String textoString[] = hora_secao.split(":");
+                if(textoString.length==2 && !textoString[0].equals(":")
+                     && textoString[0].length()==2 && !textoString[1].equals(":") && textoString[1].length()==2){
+                        horario=DateUtil.stringToHour(hora_secao);
+                    }else{
+                        System.err.println("hora no formato incorreto!!!");
+                        horario=null;
+                    }
+                }else{
+                    if(hora_secao.isEmpty()){
+                        horario=s.getDataHora();
+                    }
+                }
+            }while(horario==null);
+            Filme f =null;
+            do{
+            this.filmesCadastrados.mostrarFilmes();
+            Integer codFilme;
+            
+            String codstring = Console.scanString("codigo do filme: ");
+            if(codstring!=null && !codstring.isEmpty()){
+                codFilme = Integer.parseInt(codstring);
+                if(codFilme>0){
+                 f = this.filmeNegocio.procurarFilmePorCod(codFilme);
+                         if(f==null){
+                            System.out.println("Nenhuma Filme Encontrado!!!");
+                        }
+                    }else{
+                       f=null;
+                       System.err.println("Codigo do Filme Invalido!!!");
+                    }
+                }else{
+                    codFilme=s.getFilme().getCodigo();
+                    f=s.getFilme();
+                }
+            }while(f==null);
+            secaoNegocio.atualizar(new Secao(sala,horario,f,s.getQtdDisponivel(), s.getId()));
+                    System.out.println("Secao Atualizada Com Sucesso!!!");
+                }else{
+                    System.out.println("ID da Secao Nao Encontrado!!!");
+                    return;
+                }
+            }
+        } catch (ParseException ex) {
+                System.out.println("hora no formato invalido!");
+      
+        } catch (NegocioException ex) {
+            UIUtil.mostrarErro(ex.getMessage());
+            return;
+        }           
     }
 
-    private void MostraSalasEmMaisSecoes() {
-        System.out.println("************ Relatório de Salas - Numero de Secoes ***********");
-        listaSecao.SalasEmMaisSecoes();
+    private void ExcluirSecao() {
+        try{
+            if(this.mostrarSecoes()){
+                System.out.println("Nao ha Secoes cadastradas!!!");
+                return;
+            }else{
+               int cod = Console.scanInt("Digite o ID da secao no qual deseja alterar os dados:");
+               Secao s = secaoNegocio.procurarSecaoPorID(cod);
+                if(s!=null){
+                    String Hora = DateUtil.hourToString(s.getDataHora());
+                    System.out.println("-----------------------------");
+                    System.out.println("Secao");
+                    System.out.println("ID Secao: " + s.getId());
+                    System.out.println("Sala: " + s.getSala().getNumero());
+                    System.out.println("Horario: " + Hora);
+                    System.out.println("Codigo do Filme: " + s.getFilme().getCodigo());
+                    System.out.println("Filme: "+s.getFilme().getNome());
+                    System.out.println("-----------------------------");
+                    if(UIUtil.getConfirmacao("Realmente deseja excluir essa Secao?")) {
+                     secaoNegocio.deletar(s);
+                     System.out.println("Secao deletada com sucesso!");
+                    } else {
+                       System.out.println("Operacao cancelada!");
+                    }
+                }else{
+                    System.out.println("ID da Secao Incorreto, nenhuma secao encontrada!!!");
+                    return;
+                }
+           }
+        } catch (NegocioException ex) {
+            UIUtil.mostrarErro(ex.getMessage());
+        } 
     }
 }
+
+

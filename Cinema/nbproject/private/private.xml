@@ -11,11 +11,15 @@
             <file>file:/C:/Users/juliano/Desktop/LP2/TrabalhoDAO_CinemaLP2/Cinema/src/dao_impldb/SecaoDaoBd.java</file>
             <file>file:/C:/Users/juliano/Desktop/LP2/TrabalhoDAO_CinemaLP2/Cinema/src/cinema/Cinema.java</file>
             <file>file:/C:/Users/juliano/Desktop/LP2/TrabalhoDAO_CinemaLP2/Cinema/src/viewUI/MainUI.java</file>
+            <file>file:/C:/Users/juliano/Desktop/LP2/TrabalhoDAO_CinemaLP2/Cinema/src/dao/FilmeDao.java</file>
             <file>file:/C:/Users/juliano/Desktop/LP2/TrabalhoDAO_CinemaLP2/Cinema/src/viewUI/FilmeUI.java</file>
             <file>file:/C:/Users/juliano/Desktop/LP2/TrabalhoDAO_CinemaLP2/Cinema/src/viewUI/SalaUI.java</file>
+            <file>file:/C:/Users/juliano/Desktop/LP2/TrabalhoDAO_CinemaLP2/Cinema/src/negocio/FilmeNegocio.java</file>
             <file>file:/C:/Users/juliano/Desktop/LP2/TrabalhoDAO_CinemaLP2/Cinema/src/dao/Dao.java</file>
             <file>file:/C:/Users/juliano/Desktop/LP2/TrabalhoDAO_CinemaLP2/Cinema/src/dao/SecaoDao.java</file>
             <file>file:/C:/Users/juliano/Desktop/LP2/TrabalhoDAO_CinemaLP2/Cinema/src/view/menu/SecaoMenu.java</file>
+            <file>file:/C:/Users/juliano/Desktop/LP2/TrabalhoDAO_CinemaLP2/Cinema/src/dao_impldb/FilmeDaoBd.java</file>
+            <file>file:/C:/Users/juliano/Desktop/LP2/TrabalhoDAO_CinemaLP2/Cinema/src/viewUI/VendaUI.java</file>
         </group>
     </open-files>
 </project-private>

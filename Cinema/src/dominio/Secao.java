@@ -24,6 +24,7 @@ public class Secao implements Comparable<Secao> {
         this.id=idsecao;
     }
 
+
     public int getId() {
         return id;
     }
