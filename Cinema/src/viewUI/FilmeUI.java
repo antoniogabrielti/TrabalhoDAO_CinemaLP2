@@ -6,7 +6,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import negocio.FilmeNegocio;
 import negocio.NegocioException;
-import repositorio.RepositorioFilme;
 import util.Console;
 import view.menu.FilmeMenu;
 

@@ -4,6 +4,7 @@ package dominio;
 import java.util.Date;
 
 public class Venda implements Comparable<Venda> {
+    private int idvenda;
     private Date DataHora;
     private Secao secao;
     private int qtdVendido;
@@ -13,6 +14,17 @@ public class Venda implements Comparable<Venda> {
         this.qtdVendido=qtdVendido;
         this.DataHora=DataHora;
     }
+    public Venda(Date horario, Secao S, int qtdVendido,int id){
+        this.DataHora=horario;
+        this.secao=S;
+        this.qtdVendido=qtdVendido;
+        this.idvenda=id;
+    }
+
+    public int getIdvenda() {
+        return idvenda;
+    }
+    
     public Secao getSecao() {
         return secao;
     }

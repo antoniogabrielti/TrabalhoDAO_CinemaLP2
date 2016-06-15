@@ -10,8 +10,61 @@ capacidade smallint not null,
 idsala serial primary key);
 
 create table secao(
-idsala integer not null references sala,
-horario date not null,
-cod integer not null references filme,
+idsala integer not null references sala(idsala) on delete cascade,
+horario time not null,
+cod integer not null references filme(cod) on delete cascade,
 qtddisponivel integer not null,
 idsecao serial primary key);
+
+create table venda(
+datavenda date not null,
+idsecao int not null references secao(idsecao) on delete cascade,
+qtdvendido int not null,
+idvenda serial primary key);
+
+----------- Function e View Tops Filme e Sala ----------
+CREATE OR REPLACE FUNCTION  TopsCinema(INTEGER) RETURNS SETOF RECORD AS $$
+
+BEGIN
+	IF $1=1 THEN
+	     return query select  SM.sum,SC.cod from SecaoMaisVendida SM join secao SC on SM.idsecao=SC.idsecao;
+	ELSE
+	     return query select SM.sum,SC.idsala from SecaoMaisVendida SM join secao SC on SM.idsecao=SC.idsecao;
+	END IF;
+RETURN ;
+END;
+$$ LANGUAGE 'plpgsql';
+
+create or replace view SecaoMaisVendida as select sum(qtdvendido),idsecao from venda group by idsecao;
+select * from SecaoMaisVendida;
+
+
+create or replace view TopFilme as select * from TopsCinema(1)as (TotalVenda BIGINT, IDFilme INTEGER);
+create or replace view TopSala as select * from TopsCinema(2) as (TotalVenda BIGINT, IDSala INTEGER);
+
+------- Select das views que sao chamados no relatorio Top Filme ou Top Sala -----------------------
+select sum(totalvenda) qtd,idfilme from TopFilme group by idfilme order by sum(totalvenda) desc limit 1;
+select sum(totalvenda) qtd,idsala from TopSala group by idsala order by sum(totalvenda) desc limit 1;
+
+----------------- Trigger para calcular Quantidade Disponivel de Lugares ----------------------------
+
+CREATE or REPLACE FUNCTION venda_gatilho() 
+         RETURNS TRIGGER AS $venda_gatilho$
+    BEGIN	
+        IF (TG_OP = 'DELETE') THEN
+            UPDATE secao SET qtddisponivel = qtddisponivel + OLD.qtdvendido WHERE idsecao = OLD.idsecao; 
+            RETURN OLD;
+        ELSIF (TG_OP = 'UPDATE') THEN        
+            UPDATE secao SET qtddisponivel = qtddisponivel + OLD.qtdvendido - NEW.qtdvendido WHERE idsecao = OLD.idsecao;  
+            RETURN NEW;
+        ELSIF (TG_OP = 'INSERT') THEN
+            UPDATE secao SET qtddisponivel = qtddisponivel - NEW.qtdvendido WHERE idsecao = NEW.idsecao;       
+            RETURN NEW;
+        END IF;                   
+        RETURN NEW;
+    END;
+  $venda_gatilho$ LANGUAGE plpgsql;
+
+CREATE TRIGGER venda_gatilho BEFORE INSERT OR UPDATE OR DELETE ON venda
+  FOR EACH ROW EXECUTE PROCEDURE venda_gatilho();
+

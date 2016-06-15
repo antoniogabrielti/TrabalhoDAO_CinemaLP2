@@ -23,7 +23,7 @@ public class MainUI {
                    new SecaoUI().executar();
                     break;
                 case MainMenu.OP_VENDA:
-                  //new VendaUI().executar();
+                   new VendaUI().executar();
                     break;
                 case MainMenu.OP_SAIR:
                     System.out.println("Aplicação finalizada!!!");

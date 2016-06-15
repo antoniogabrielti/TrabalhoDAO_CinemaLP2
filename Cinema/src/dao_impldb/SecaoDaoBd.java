@@ -21,7 +21,7 @@ public class SecaoDaoBd extends DaoBd<Secao> implements SecaoDao {
         try {
             String sql = "INSERT INTO secao VALUES (?,?,?,?)";
 
-         
+            
             conectarObtendoId(sql);
             comando.setInt(1, secao.getSala().getId());
             java.sql.Time horaSql = new java.sql.Time(secao.getDataHora().getTime());

@@ -120,12 +120,18 @@ class SecaoUI {
                 + String.format("%-20s", "|CAPACIDADE"));
             for (Secao s : listaSecoes) {
                 String horario = DateUtil.hourToString(s.getDataHora());
-                if(s.getQtdDisponivel()>0 && !horario.isEmpty() && horario!=null){
+                if(!horario.isEmpty() && horario!=null){
+                    String disponivel=null;
+                    if(s.getQtdDisponivel()>0){
+                        disponivel=s.getQtdDisponivel()+" Lugares Disponiveis.";
+                    }else{
+                        disponivel="ESGOTADA";
+                    }
                      System.out.println(String.format("%-10s", s.getId()) + "\t"
                       + String.format("%-20s", "|" + s.getSala().getNumero()) + "\t"
                       + String.format("%-20s", "|" + horario) + "\t"
                       + String.format("%-20s", "|" + s.getFilme().getNome()) + "\t"
-                      + String.format("%-20s", "|" + s.getQtdDisponivel() + " Lugares Disponiveis."));
+                      + String.format("%-20s", "|" + disponivel ));                     
                 }
             
                
@@ -343,7 +349,7 @@ class SecaoUI {
                 System.out.println("Nao ha Secoes cadastradas!!!");
                 return;
             }else{
-               int cod = Console.scanInt("Digite o ID da secao no qual deseja alterar os dados:");
+               int cod = Console.scanInt("Digite o ID da secao no qual deseja excluir:");
                Secao s = secaoNegocio.procurarSecaoPorID(cod);
                 if(s!=null){
                     String Hora = DateUtil.hourToString(s.getDataHora());
