@@ -26,8 +26,8 @@ public class UIUtil {
             else{
                 System.out.println("Opcao invalida!");
             }                
-        }while(confirmacao.equalsIgnoreCase(SIM) || 
-                confirmacao.equalsIgnoreCase(NAO));
+        }while(!confirmacao.equalsIgnoreCase(SIM) || 
+                !confirmacao.equalsIgnoreCase(NAO));
         return false;
     } 
     

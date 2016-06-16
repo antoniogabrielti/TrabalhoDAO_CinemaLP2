@@ -54,8 +54,14 @@ CREATE or REPLACE FUNCTION venda_gatilho()
         IF (TG_OP = 'DELETE') THEN
             UPDATE secao SET qtddisponivel = qtddisponivel + OLD.qtdvendido WHERE idsecao = OLD.idsecao; 
             RETURN OLD;
-        ELSIF (TG_OP = 'UPDATE') THEN        
-            UPDATE secao SET qtddisponivel = qtddisponivel + OLD.qtdvendido - NEW.qtdvendido WHERE idsecao = OLD.idsecao;  
+        ELSIF (TG_OP = 'UPDATE') THEN 
+		IF(OLD.idsecao=NEW.idsecao) THEN
+			UPDATE secao SET qtddisponivel = qtddisponivel + OLD.qtdvendido - NEW.qtdvendido WHERE idsecao = OLD.idsecao;
+		ELSE
+		        UPDATE secao set qtddisponivel=qtddisponivel+OLD.qtdvendido WHERE idsecao=OLD.idsecao;
+			UPDATE secao set qtddisponivel=qtddisponivel-NEW.qtdvendido WHERE idsecao=NEW.idsecao;
+			
+		END IF;
             RETURN NEW;
         ELSIF (TG_OP = 'INSERT') THEN
             UPDATE secao SET qtddisponivel = qtddisponivel - NEW.qtdvendido WHERE idsecao = NEW.idsecao;       

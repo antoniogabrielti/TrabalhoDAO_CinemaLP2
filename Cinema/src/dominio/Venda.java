@@ -36,6 +36,18 @@ public class Venda implements Comparable<Venda> {
     public Date getDataHora() {
         return DataHora;
     }
+
+    public void setDataHora(Date DataHora) {
+        this.DataHora = DataHora;
+    }
+
+    public void setSecao(Secao secao) {
+        this.secao = secao;
+    }
+
+    public void setQtdVendido(int qtdVendido) {
+        this.qtdVendido = qtdVendido;
+    }
     
 
     @Override
